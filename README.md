@@ -1,5 +1,9 @@
 # Decima
 
+- Requisitos:
+
+pip install tensorflow==1.13.2
+
 Simulator part of Decima (SIGCOMM '19) https://web.mit.edu/decima
 
 Example:
