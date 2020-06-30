@@ -24,6 +24,8 @@ def compute_actor_gradients(actor_agent, exp, batch_adv, entropy_weight):
         job_valid_mask = np.vstack(exp['job_valid_mask'][ba_start : ba_end])
         summ_mats = exp['summ_mats'][ba_start : ba_end]
         running_dag_mats = exp['running_dag_mat'][ba_start : ba_end]
+
+        # TODO:: adv que será modificado
         adv = batch_adv[ba_start : ba_end, :]
         gcn_mats = exp['gcn_mats'][b]
         gcn_masks = exp['gcn_masks'][b]

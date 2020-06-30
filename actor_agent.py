@@ -100,6 +100,7 @@ class ActorAgent(Agent):
             self.job_act_probs, self.job_act_vec),
             reduction_indices=2), reduction_indices=1, keep_dims=True)
 
+        # TODO:: configurar esse self.adv com as informações do escalonamento feito pelo PSO
         # actor loss due to advantge (negated)
         self.adv_loss = tf.reduce_sum(tf.multiply(
             tf.log(self.selected_node_prob * self.selected_job_prob + \

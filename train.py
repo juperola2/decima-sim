@@ -1,5 +1,7 @@
 import os
 # os.environ['CUDA_VISIBLE_DEVICES']=''
+from pre_train import pre_train_actor_agent
+
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 import time
 import numpy as np
@@ -14,6 +16,7 @@ from compute_gradients import *
 from actor_agent import ActorAgent
 from tf_logger import TFLogger
 
+tf.executing_eagerly()
 
 def invoke_model(actor_agent, obs, exp):
     # parse observation
@@ -249,6 +252,10 @@ def main():
         sess, args.node_input_dim, args.job_input_dim,
         args.hid_dims, args.output_dim, args.max_depth,
         range(1, args.exec_cap + 1))
+
+    pre_train_actor_agent(actor_agent, args.seed, \
+                          args.heuristic, args.num_heur_ep,
+                          args.reset_prob)
 
     # tensorboard logging
     tf_logger = TFLogger(sess, [
