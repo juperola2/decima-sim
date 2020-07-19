@@ -222,11 +222,35 @@ def main():
     create_folder_if_not_exists(args.result_folder)
     create_folder_if_not_exists(args.model_folder)
 
+    # gpu configuration
+    config = tf.ConfigProto(
+        device_count={'GPU': args.master_num_gpu},
+        gpu_options=tf.GPUOptions(
+            per_process_gpu_memory_fraction=args.master_gpu_fraction))
+
     # initialize communication queues
     params_queues = [mp.Queue(1) for _ in range(args.num_agents)]
     reward_queues = [mp.Queue(1) for _ in range(args.num_agents)]
     adv_queues = [mp.Queue(1) for _ in range(args.num_agents)]
     gradient_queues = [mp.Queue(1) for _ in range(args.num_agents)]
+
+    sess = tf.Session(config=config)
+
+    # set up actor agent
+    actor_agent = ActorAgent(
+        sess, args.node_input_dim, args.job_input_dim,
+        args.hid_dims, args.output_dim, args.max_depth,
+        range(1, args.exec_cap + 1))
+
+    pre_train_actor_agent(actor_agent, args.seed,
+                          args.heuristic, args.num_heur_ep,
+                          args.reset_prob, args.entropy_weight_init, args.lr)
+
+    # initialize entropy parameters
+    entropy_weight = args.entropy_weight_init
+
+    # initialize episode reset probability
+    reset_prob = args.reset_prob
 
     # set up training agents
     agents = []
@@ -239,23 +263,6 @@ def main():
     for i in range(args.num_agents):
         agents[i].start()
 
-    # gpu configuration
-    config = tf.ConfigProto(
-        device_count={'GPU': args.master_num_gpu},
-        gpu_options=tf.GPUOptions(
-            per_process_gpu_memory_fraction=args.master_gpu_fraction))
-
-    sess = tf.Session(config=config)
-
-    # set up actor agent
-    actor_agent = ActorAgent(
-        sess, args.node_input_dim, args.job_input_dim,
-        args.hid_dims, args.output_dim, args.max_depth,
-        range(1, args.exec_cap + 1))
-
-    pre_train_actor_agent(actor_agent, args.seed, \
-                          args.heuristic, args.num_heur_ep,
-                          args.reset_prob)
 
     # tensorboard logging
     tf_logger = TFLogger(sess, [
@@ -268,11 +275,6 @@ def main():
     avg_reward_calculator = AveragePerStepReward(
         args.average_reward_storage_size)
 
-    # initialize entropy parameters
-    entropy_weight = args.entropy_weight_init
-
-    # initialize episode reset probability
-    reset_prob = args.reset_prob
 
     # ---- start training process ----
     for ep in range(1, args.num_ep):
