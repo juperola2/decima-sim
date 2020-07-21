@@ -9,7 +9,7 @@ from spark_env.wall_time import WallTime
 
 
 def pre_train_actor_agent(actor_agent, seed, heuristic, num_eps, reset_prob, entropy_weight, lr):
-    if heuristic != 'pso_init':
+    if heuristic != 'pso':
         return
 
     env = Environment()
