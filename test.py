@@ -1,6 +1,9 @@
 import numpy as np
 import tensorflow as tf
 import matplotlib
+
+from pso_agent import PSOAgent
+
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
 from spark_env.env import Environment
@@ -36,6 +39,8 @@ for scheme in args.test_schemes:
         agents[scheme] = DynamicPartitionAgent()
     elif scheme == 'spark_fifo':
         agents[scheme] = SparkAgent(exec_cap=args.exec_cap)
+    elif scheme == 'pso':
+        agents[scheme] = PSOAgent(env.wall_time)
     else:
         print('scheme ' + str(scheme) + ' not recognized')
         exit(1)

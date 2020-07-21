@@ -142,7 +142,7 @@ parser.add_argument('--num_saved_models', type=int, default=1000,
 
 # TODO:: incremento dos parâmetros
 parser.add_argument('--heuristic', type=str, default=None,
-                    help='Heuristic to help training (default: None, others: pso_init, pso_reward)')
+                    help='Heuristic to help training (default: None, others: pso)')
 parser.add_argument('--num_heur_ep', type=int, default=100,
                     help='Number of episodes with heuristic initial optimization (default: 100)')
 

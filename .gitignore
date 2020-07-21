@@ -1,5 +1,6 @@
 **/.idea/**
 **/models/**
+**/results/**
 **/__pycache__/
 **/spark_env/__pycache__/
 

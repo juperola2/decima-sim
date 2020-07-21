@@ -263,8 +263,6 @@ def main():
     # initialize episode reset probability
     reset_prob = args.reset_prob
 
-    # tf.reset_default_graph()
-
     # tensorboard logging
     tf_logger = TFLogger(sess, [
         'actor_loss', 'entropy', 'value_loss', 'episode_length',
