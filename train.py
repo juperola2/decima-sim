@@ -234,6 +234,13 @@ def main():
     adv_queues = [mp.Queue(1) for _ in range(args.num_agents)]
     gradient_queues = [mp.Queue(1) for _ in range(args.num_agents)]
 
+    # set up training agents
+    agents = []
+    for i in range(args.num_agents):
+        agents.append(mp.Process(target=train_agent, args=(
+            i, params_queues[i], reward_queues[i],
+            adv_queues[i], gradient_queues[i])))
+
     sess = tf.Session(config=config)
 
     # set up actor agent
@@ -252,12 +259,7 @@ def main():
     # initialize episode reset probability
     reset_prob = args.reset_prob
 
-    # set up training agents
-    agents = []
-    for i in range(args.num_agents):
-        agents.append(mp.Process(target=train_agent, args=(
-            i, params_queues[i], reward_queues[i],
-            adv_queues[i], gradient_queues[i])))
+    tf.reset_default_graph()
 
     # start training agents
     for i in range(args.num_agents):
