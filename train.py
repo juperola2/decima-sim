@@ -2,7 +2,7 @@ import os
 # os.environ['CUDA_VISIBLE_DEVICES']=''
 from pre_train import pre_train_actor_agent
 
-os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import time
 import numpy as np
 import tensorflow as tf
@@ -18,6 +18,7 @@ from tf_logger import TFLogger
 
 tf.executing_eagerly()
 
+
 def invoke_model(actor_agent, obs, exp):
     # parse observation
     job_dags, source_job, num_source_exec, \
@@ -30,13 +31,13 @@ def invoke_model(actor_agent, obs, exp):
 
     # invoking the learning model
     node_act, job_act, \
-        node_act_probs, job_act_probs, \
-        node_inputs, job_inputs, \
-        node_valid_mask, job_valid_mask, \
-        gcn_mats, gcn_masks, summ_mats, \
-        running_dags_mat, dag_summ_backward_map, \
-        exec_map, job_dags_changed = \
-            actor_agent.invoke_model(obs)
+    node_act_probs, job_act_probs, \
+    node_inputs, job_inputs, \
+    node_valid_mask, job_valid_mask, \
+    gcn_mats, gcn_masks, summ_mats, \
+    running_dags_mat, dag_summ_backward_map, \
+    exec_map, job_dags_changed = \
+        actor_agent.invoke_model(obs)
 
     if sum(node_valid_mask[0, :]) == 0:
         # no node is valid to assign
@@ -53,17 +54,17 @@ def invoke_model(actor_agent, obs, exp):
 
     # job_act should be valid
     assert job_valid_mask[0, job_act[0, job_idx] + \
-        len(actor_agent.executor_levels) * job_idx] == 1
+                          len(actor_agent.executor_levels) * job_idx] == 1
 
     # find out the executor limit decision
     if node.job_dag is source_job:
         agent_exec_act = actor_agent.executor_levels[
-            job_act[0, job_idx]] - \
-            exec_map[node.job_dag] + \
-            num_source_exec
+                             job_act[0, job_idx]] - \
+                         exec_map[node.job_dag] + \
+                         num_source_exec
     else:
         agent_exec_act = actor_agent.executor_levels[
-            job_act[0, job_idx]] - exec_map[node.job_dag]
+                             job_act[0, job_idx]] - exec_map[node.job_dag]
 
     # parse job limit action
     use_exec = min(
@@ -125,7 +126,7 @@ def train_agent(agent_id, param_queue, reward_queue, adv_queue, gradient_queue):
         # get parameters from master
         (actor_params, seed, max_time, entropy_weight) = \
             param_queue.get()
-        
+
         # synchronize model
         actor_agent.set_params(actor_params)
 
@@ -162,7 +163,7 @@ def train_agent(agent_id, param_queue, reward_queue, adv_queue, gradient_queue):
             exp['wall_time'].append(env.wall_time.curr_time)
 
             while not done:
-                
+
                 node, use_exec = invoke_model(actor_agent, obs, exp)
 
                 obs, reward, done = env.step(node, use_exec)
@@ -184,10 +185,10 @@ def train_agent(agent_id, param_queue, reward_queue, adv_queue, gradient_queue):
             assert len(exp['node_inputs']) == len(exp['reward'])
             reward_queue.put(
                 [exp['reward'], exp['wall_time'],
-                len(env.finished_job_dags),
-                np.mean([j.completion_time - j.start_time \
-                         for j in env.finished_job_dags]),
-                env.wall_time.curr_time >= env.max_time])
+                 len(env.finished_job_dags),
+                 np.mean([j.completion_time - j.start_time \
+                          for j in env.finished_job_dags]),
+                 env.wall_time.curr_time >= env.max_time])
 
             # get advantage term from master
             batch_adv = adv_queue.get()
@@ -274,7 +275,6 @@ def main():
     avg_reward_calculator = AveragePerStepReward(
         args.average_reward_storage_size)
 
-
     # ---- start training process ----
     for ep in range(1, args.num_ep + 1):
         print('training epoch', ep)
@@ -309,8 +309,8 @@ def main():
                 continue
             else:
                 batch_reward, batch_time, \
-                    num_finished_jobs, avg_job_duration, \
-                    reset_hit = result
+                num_finished_jobs, avg_job_duration, \
+                reset_hit = result
 
             diff_time = np.array(batch_time[1:]) - \
                         np.array(batch_time[:-1])
@@ -343,11 +343,11 @@ def main():
             if args.diff_reward_enabled:
                 # differential reward mode on
                 rewards = np.array([r - avg_per_step_reward * t for \
-                    (r, t) in zip(all_rewards[i], all_diff_times[i])])
+                                    (r, t) in zip(all_rewards[i], all_diff_times[i])])
             else:
                 # regular reward
                 rewards = np.array([r for \
-                    (r, t) in zip(all_rewards[i], all_diff_times[i])])
+                                    (r, t) in zip(all_rewards[i], all_diff_times[i])])
 
             cum_reward = discount(rewards, args.gamma)
 
@@ -376,7 +376,7 @@ def main():
             actor_gradients.append(actor_gradient)
             all_action_loss.append(loss[0])
             all_entropy.append(-loss[1] / \
-                float(all_cum_reward[i].shape[0]))
+                               float(all_cum_reward[i].shape[0]))
             all_value_loss.append(loss[2])
 
         t4 = time.time()
@@ -403,15 +403,15 @@ def main():
 
         # decrease entropy weight
         entropy_weight = decrease_var(entropy_weight,
-            args.entropy_weight_min, args.entropy_weight_decay)
+                                      args.entropy_weight_min, args.entropy_weight_decay)
 
         # decrease reset probability
         reset_prob = decrease_var(reset_prob,
-            args.reset_prob_min, args.reset_prob_decay)
+                                  args.reset_prob_min, args.reset_prob_decay)
 
         if ep % args.model_save_interval == 0:
             actor_agent.save_model(args.model_folder + \
-                'model_ep_' + str(ep))
+                                   'model_ep_' + str(ep))
 
     sess.close()
 
