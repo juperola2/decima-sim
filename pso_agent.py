@@ -59,11 +59,9 @@ class PSOAgent(Agent):
 
         # TODO - definir a estratégia de fornecer 1 nó (no caso do teste)
         nd, l = self.compute_limits()
-        limit = min(l, num_source_exec)
         node = self.nodes[nd[0]]
-        self.prev_time = self.env_wall_time.curr_time
         # return nd, l
-        return node, limit
+        return node, l
 
     def pso(self, num_source_exec, nodes):
         # print("pso")
