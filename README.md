@@ -2,8 +2,8 @@
 
 - Requisitos:
 
-pip install tensorflow==1.13.2
-
+pip3 install tensorflow==1.15
+pip3 install networkx
 Simulator part of Decima (SIGCOMM '19) https://web.mit.edu/decima
 
 Example:

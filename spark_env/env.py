@@ -18,7 +18,6 @@ from spark_env.task import Task
 
 class Environment(object):
     def __init__(self):
-
         # isolated random number generator
         self.np_random = np.random.RandomState()
 
@@ -221,27 +220,53 @@ class Environment(object):
                 self.backup_schedule(executor)
 
     def step(self, next_node, limit):
+        #### TEST #################
+        if isinstance(next_node, list):
+            l = 0
+            for n in next_node:
+                assert n not in self.node_selected
+                self.node_selected.add(n)
+                # commit the source executor
+                executor = next(iter(self.exec_to_schedule))
+                source = executor.job_dag if executor.node is None else executor.node
 
-        # mark the node as selected
-        assert next_node not in self.node_selected
-        self.node_selected.add(next_node)
-        # commit the source executor
-        executor = next(iter(self.exec_to_schedule))
-        source = executor.job_dag if executor.node is None else executor.node
+                # compute number of valid executors to assign
+                if n is not None:
+                    use_exec = min(n.num_tasks - n.next_task_idx - \
+                                    self.exec_commit.node_commit[n] - \
+                                    self.moving_executors.count(n), limit[l])
 
-        # compute number of valid executors to assign
-        if next_node is not None:
-            use_exec = min(next_node.num_tasks - next_node.next_task_idx - \
-                           self.exec_commit.node_commit[next_node] - \
-                           self.moving_executors.count(next_node), limit)
+                else:
+                    use_exec = limit[l]
+                assert use_exec > 0
+
+                self.exec_commit.add(source, n, use_exec)
+                # deduct the executors that know the destination
+                self.num_source_exec -= use_exec
+                assert self.num_source_exec >= 0
+                l= l+1
+         ######################################
         else:
-            use_exec = limit
-        assert use_exec > 0
+            # mark the node as selected
+            assert next_node not in self.node_selected
+            self.node_selected.add(next_node)
+            # commit the source executor
+            executor = next(iter(self.exec_to_schedule))
+            source = executor.job_dag if executor.node is None else executor.node
 
-        self.exec_commit.add(source, next_node, use_exec)
-        # deduct the executors that know the destination
-        self.num_source_exec -= use_exec
-        assert self.num_source_exec >= 0
+            # compute number of valid executors to assign
+            if next_node is not None:
+                use_exec = min(next_node.num_tasks - next_node.next_task_idx - \
+                               self.exec_commit.node_commit[next_node] - \
+                               self.moving_executors.count(next_node), limit)
+            else:
+                use_exec = limit
+            assert use_exec > 0
+
+            self.exec_commit.add(source, next_node, use_exec)
+            # deduct the executors that know the destination
+            self.num_source_exec -= use_exec
+            assert self.num_source_exec >= 0
 
         if self.num_source_exec == 0:
             # now a new scheduling round, clean up node selection

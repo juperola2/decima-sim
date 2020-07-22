@@ -3,7 +3,7 @@ from utils import *
 from sparse_op import expand_sp_mat, merge_and_extend_sp_mat
 
 
-def compute_actor_gradients(actor_agent, exp, batch_adv, entropy_weight):
+def compute_actor_gradients(actor_agent, exp, pso_nodes_probs, entropy_weight):
     batch_points = truncate_experiences(exp['job_state_change'])
 
     all_gradients = []
@@ -24,9 +24,21 @@ def compute_actor_gradients(actor_agent, exp, batch_adv, entropy_weight):
         job_valid_mask = np.vstack(exp['job_valid_mask'][ba_start : ba_end])
         summ_mats = exp['summ_mats'][ba_start : ba_end]
         running_dag_mats = exp['running_dag_mat'][ba_start : ba_end]
+        node_act_probs = exp['node_act_probs'][ba_start: ba_end]
 
-        # TODO:: adv que será modificado
-        adv = batch_adv[ba_start : ba_end, :]
+        adv = np.zeros((node_act_vec.shape[0], 1))
+        pso_node_indexes = pso_nodes_probs[ba_start: ba_end]
+        i = 0
+        for pso_node_index, node_act_prob in zip (pso_node_indexes, node_act_probs):
+            probs = [0.0] * node_act_vec.shape[1]
+            # TODO:: verificar pq as vezes o indice é maior ou igual ao tamanho vetor de probabilidades
+            if pso_node_index is not None and pso_node_index < node_act_vec.shape[1]:
+                probs[pso_node_index] = 1.0
+
+            probs = np.array(probs)
+            adv[i] = np.sum((node_act_prob - probs) ** 2)
+            i += 1
+
         gcn_mats = exp['gcn_mats'][b]
         gcn_masks = exp['gcn_masks'][b]
         summ_backward_map = exp['dag_summ_back_mat'][b]
@@ -62,7 +74,6 @@ def compute_actor_gradients(actor_agent, exp, batch_adv, entropy_weight):
 
     all_loss[0] = np.sum(all_loss[0])
     all_loss[1] = np.sum(all_loss[1])  # to get entropy
-    all_loss[2] = np.sum(batch_adv ** 2) # time based baseline loss
 
     # aggregate all gradients from the batches
     gradients = aggregate_gradients(all_gradients)

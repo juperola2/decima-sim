@@ -140,6 +140,12 @@ parser.add_argument('--model_save_interval', type=int, default=1000,
 parser.add_argument('--num_saved_models', type=int, default=1000,
                     help='Number of models to keep (default: 1000)')
 
+# TODO:: incremento dos parâmetros
+parser.add_argument('--heuristic', type=str, default=None,
+                    help='Heuristic to help training (default: None, others: pso)')
+parser.add_argument('--num_heur_ep', type=int, default=100,
+                    help='Number of episodes with heuristic initial optimization (default: 100)')
+
 # -- Spark interface --
 parser.add_argument('--scheduler_type', type=str, default='dynamic_partition',
                     help='type of scheduling algorithm (default: dynamic_partition)')
