@@ -102,6 +102,6 @@ for exp in range(args.num_exp):
     plt.xlabel('Total reward')
     plt.ylabel('CDF')
     plt.legend(args.test_schemes)
-    fig.savefig(args.result_folder + 'total_reward.png')
+    fig.savefig(args.saved_model + 'total_reward.png')
 
     plt.close(fig)
