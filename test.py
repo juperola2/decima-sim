@@ -78,12 +78,12 @@ for exp in range(args.num_exp):
 
         visualize_dag_time_save_pdf(
                 env.finished_job_dags, env.executors,
-                args.saved_model + 'visualization_dag_time_exp_' + \
+                args.result_folder + 'visualization_dag_time_exp_' + \
                 str(exp) + '_scheme_' + scheme + \
                 '.png', plot_type='app')
 
         visualize_executor_usage(env.finished_job_dags,
-                args.saved_model + 'visualization_ex_usage_exp_' + \
+                args.result_folder + 'visualization_ex_usage_exp_' + \
                 str(exp) + '_scheme_' + scheme + '.png')
 
 
@@ -99,6 +99,6 @@ for exp in range(args.num_exp):
     plt.xlabel('Total reward')
     plt.ylabel('CDF')
     plt.legend(args.test_schemes)
-    fig.savefig(args.saved_model + 'total_reward.png')
+    fig.savefig(args.result_folder + 'total_reward.png')
 
     plt.close(fig)
