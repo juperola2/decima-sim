@@ -21,11 +21,11 @@ class PSOAgent(Agent):
 
     def compute_limits(self):
         i, c = np.unique(self.gbest.position, return_counts=True)
-        # m = c.argmax()
+        m = c.argmax()
         inti = np.array(i, dtype=int)
         x = np.array(self.nodes)[inti]
-        return list(x), c
-        # return int(i[m]), c[m]
+        # return list(x), c
+        return int(i[m]), c[m]
 
     def get_action(self, obs):
 
@@ -59,11 +59,9 @@ class PSOAgent(Agent):
 
         # TODO - definir a estratégia de fornecer 1 nó (no caso do teste)
         nd, l = self.compute_limits()
-        limit = min(l, num_source_exec)
-        node = self.nodes[nd[0]]
-        self.prev_time = self.env_wall_time.curr_time
+        node = self.nodes[nd]
         # return nd, l
-        return node, limit
+        return node, l
 
     def pso(self, num_source_exec, nodes):
         # print("pso")
