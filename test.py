@@ -13,7 +13,8 @@ from actor_agent import ActorAgent
 from spark_env.canvas import *
 from param import *
 from utils import *
-
+import time
+import save_data
 
 # create result folder
 if not os.path.exists(args.result_folder):
@@ -64,15 +65,17 @@ for exp in range(args.num_exp):
 
         # start experiment
         obs = env.observe()
-
+        c = 0
         total_reward = 0
         done = False
-
+        s_start = time.time()
         while not done:
             node, use_exec = agent.get_action(obs)
             obs, reward, done = env.step(node, use_exec)
             total_reward += reward
-
+            c = c + 1
+        s_end = time.time()
+        save_data.save_data(s_end - s_start, env, scheme, c, args.result_folder)
         all_total_reward[scheme].append(total_reward)
 
         if args.canvs_visualization:

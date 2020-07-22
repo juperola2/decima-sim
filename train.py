@@ -1,6 +1,7 @@
 import os
 # os.environ['CUDA_VISIBLE_DEVICES']=''
 from pre_train import pre_train_actor_agent
+import save_data
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import time
@@ -275,6 +276,7 @@ def main():
     avg_reward_calculator = AveragePerStepReward(
         args.average_reward_storage_size)
 
+    jtcs = []
     # ---- start training process ----
     for ep in range(1, args.num_ep + 1):
         print('training epoch', ep)
@@ -413,6 +415,7 @@ def main():
             actor_agent.save_model(args.model_folder + \
                                    'model_ep_' + str(ep))
 
+    save_data.save_jcts_ep(jtcs, args.result_folder)
     sess.close()
 
 
