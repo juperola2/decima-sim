@@ -167,6 +167,9 @@ class Particle(object):
                                                       (self.pso.nodes[i].job_dag.num_nodes -self.pso.nodes[i].job_dag.num_nodes_done)))\
              - self.pso.nodes[i].job_dag.start_time
 
+            #  f = f + ((self.pso.nodes[i].job_dag.num_nodes - self.pso.nodes[i].job_dag.num_nodes_done) \
+            #         / self.pso.nodes[i].job_dag.num_nodes)
+
             #     ((self.pso.nodes[i].job_dag.num_nodes_done+1)/self.pso.nodes[i].job_dag.num_nodes) -self.pso.nodes[i].job_dag.start_time]
 
         self.fitness = -f #+ w
