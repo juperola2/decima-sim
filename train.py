@@ -416,7 +416,7 @@ def main():
             actor_agent.save_model(args.model_folder + \
                                    'model_ep_' + str(ep))
 
-    save_data.save_jcts_ep(jtcs, args.result_folder)
+    save_data.save_jcts_ep(jtcs, args.saved_model)
     sess.close()
 
 
