@@ -1,11 +1,9 @@
-import numpy as np
-import tensorflow as tf
 import matplotlib
+import tensorflow as tf
 
 from pso_agent import PSOAgent
 
 matplotlib.use('agg')
-import matplotlib.pyplot as plt
 from spark_env.env import Environment
 from spark_agent import SparkAgent
 from heuristic_agent import DynamicPartitionAgent
@@ -78,15 +76,14 @@ for exp in range(args.num_exp):
         save_data.save_data(s_end - s_start, env, scheme, c, args.result_folder)
         all_total_reward[scheme].append(total_reward)
 
-        if args.canvs_visualization:
-            visualize_dag_time_save_pdf(
+        visualize_dag_time_save_pdf(
                 env.finished_job_dags, env.executors,
-                args.saved_model + 'visualization_exp_' + \
+                args.saved_model + 'visualization_dag_time_exp_' + \
                 str(exp) + '_scheme_' + scheme + \
                 '.png', plot_type='app')
-        else:
-            visualize_executor_usage(env.finished_job_dags,
-                args.saved_model + 'visualization_exp_' + \
+
+        visualize_executor_usage(env.finished_job_dags,
+                args.saved_model + 'visualization_ex_usage_exp_' + \
                 str(exp) + '_scheme_' + scheme + '.png')
 
 

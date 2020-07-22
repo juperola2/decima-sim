@@ -66,7 +66,7 @@ parser.add_argument('--exec_mems', type=float,
 
 # -- Evaluation --
 parser.add_argument('--test_schemes', type=str,
-                    default=['dynamic_partition'], nargs='+',
+                    default=['dynamic_partition', 'learn', 'spark_fifo', 'pso'], nargs='+',
                     help='Schemes for testing the performance')
 
 # -- TPC-H --
