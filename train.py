@@ -255,7 +255,7 @@ def main():
 
     pre_train_actor_agent(actor_agent, args.seed,
                           args.heuristic, args.num_heur_ep,
-                          args.reset_prob, args.entropy_weight_init, args.lr)
+                          args.reset_prob, args.entropy_weight_init, args.lr, args.exec_cap)
 
     # initialize entropy parameters
     entropy_weight = args.entropy_weight_init

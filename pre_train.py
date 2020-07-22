@@ -1,4 +1,6 @@
+from heuristic_agent import DynamicPartitionAgent
 from pretrain_compute_gradients import compute_actor_gradients
+from spark_agent import SparkAgent
 from spark_env.env import Environment, generate_coin_flips
 from spark_env.timeline import Timeline
 from pso_agent import PSOAgent
@@ -8,18 +10,23 @@ from utils import *
 from spark_env.wall_time import WallTime
 
 
-def pre_train_actor_agent(actor_agent, seed, heuristic, num_eps, reset_prob, entropy_weight, lr):
-    if heuristic != 'pso':
+def pre_train_actor_agent(actor_agent, seed, heuristic, num_eps, reset_prob, entropy_weight, lr, exec_cap):
+    # global timer
+    wall_time = WallTime()
+
+    agent = None
+    if heuristic == 'pso':
+        agent = PSOAgent(wall_time)
+    elif heuristic == 'dynamic_partition':
+        agent = DynamicPartitionAgent()
+    elif heuristic == 'spark_fifo':
+        agent = SparkAgent(exec_cap=exec_cap)
+    else:
+        print('agente de pré-treino não encontrado')
         return
 
     env = Environment()
     env.seed(seed)
-    gradient_queue = []
-
-    # global timer
-    wall_time = WallTime()
-
-    agent_pso = PSOAgent(wall_time)
 
     # set up storage for experience
     exp = {'node_inputs': [], 'job_inputs': [], \
@@ -41,7 +48,7 @@ def pre_train_actor_agent(actor_agent, seed, heuristic, num_eps, reset_prob, ent
         env.seed(seed)
         env.reset(max_time=max_time)
 
-        gradient = train_with_pso(actor_agent, agent_pso, entropy_weight, env, exp)
+        gradient = train_with_pso(actor_agent, agent, entropy_weight, env, exp)
 
         if gradient is not None:
             actor_agent.apply_gradients(gradient, lr)
