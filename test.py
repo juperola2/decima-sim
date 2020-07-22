@@ -76,6 +76,8 @@ for exp in range(args.num_exp):
         save_data.save_data(s_end - s_start, env, scheme, c, args.result_folder)
         all_total_reward[scheme].append(total_reward)
 
+        original = os.getcwd()
+        os.chdir(args.result_folder)
         visualize_dag_time_save_pdf(
                 env.finished_job_dags, env.executors,
                 args.result_folder + 'visualization_dag_time_exp_' + \
@@ -85,7 +87,7 @@ for exp in range(args.num_exp):
         visualize_executor_usage(env.finished_job_dags,
                 args.result_folder + 'visualization_ex_usage_exp_' + \
                 str(exp) + '_scheme_' + scheme + '.png')
-
+        os.chdir(original)
 
     # plot CDF of performance
 

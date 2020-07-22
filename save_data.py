@@ -4,6 +4,9 @@ import os
 
 
 def save_data(time, env, scheme, c, dir):
+
+    original = os.getcwd()
+    os.chdir(dir)
     fct = "{}{}_jct.csv".format(dir, scheme)
     fgd="{}{}_geral_data.csv".format(dir, scheme)
     ex_f = os.path.exists(fct)
@@ -19,6 +22,7 @@ def save_data(time, env, scheme, c, dir):
         if not ex_f:
             swt.writerow(['scheme', 'number_events', 'dur_total'])
         swt.writerow([scheme, c, time])
+    os.chdir(original)
 
 def save_jcts_ep(data, dir):
     file = "{}jcts_train.csv".format(dir)
