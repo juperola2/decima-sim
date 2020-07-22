@@ -329,6 +329,7 @@ def main():
 
         t2 = time.time()
         print('got reward from workers', t2 - t1, 'seconds')
+        jtcs.append([ep, all_avg_job_duration])
 
         if any_agent_panic:
             # The try condition breaks in some agent (should
