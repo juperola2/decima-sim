@@ -149,30 +149,32 @@ class Particle(object):
                   (self.pso.nodes[i].job_dag.num_nodes -self.pso.nodes[i].job_dag.num_nodes_done) + 1
             t = t +self.pso.env_wall_time.curr_time * (1+ 1/div) - self.pso.nodes[i].job_dag.start_time
         return t
+
     def compute_fitness(self):
         # TODO - definir a função de fitness
         f = 0.0
-
+        # w= 0.0
         for n in self.position:
-             i = int(n)
-        #
-        #     # f = f +  self.pso.nodes[i].job_dag.start_time*((self.pso.nodes[i].job_dag.num_nodes - self.pso.nodes[i].job_dag.num_nodes_done) \
-        #     #          / self.pso.nodes[i].job_dag.num_nodes)
-        #     # f= f+ (min(self.pso.nodes[i].job_dag.completion_time,
-        #     #          self.pso.env_wall_time.curr_time) - max(
-        #     #          self.pso.nodes[i].job_dag.start_time,
-        #     #          self.pso.prev_time)) / \
-        #     #          args.reward_scale
-             f = f+ self.pso.env_wall_time.curr_time*(1+(1-1/\
-                                                      (self.pso.nodes[i].job_dag.num_nodes -self.pso.nodes[i].job_dag.num_nodes_done)))\
-             - self.pso.nodes[i].job_dag.start_time
+            i = int(n)
 
-            #  f = f + ((self.pso.nodes[i].job_dag.num_nodes - self.pso.nodes[i].job_dag.num_nodes_done) \
-            #         / self.pso.nodes[i].job_dag.num_nodes)
-
-            #     ((self.pso.nodes[i].job_dag.num_nodes_done+1)/self.pso.nodes[i].job_dag.num_nodes) -self.pso.nodes[i].job_dag.start_time]
-
+            f = f + (self.pso.env_wall_time.curr_time ) \
+                    * ((self.pso.nodes[i].job_dag.num_nodes - self.pso.nodes[i].job_dag.num_nodes_done) \
+                    / self.pso.nodes[i].job_dag.num_nodes)
+            # w = w + self.pso.env_wall_time.curr_time-self.pso.nodes[i].job_dag.start_time
         self.fitness = -f #+ w
+
+    # def compute_fitness(self):
+    #     # TODO - definir a função de fitness
+    #     f = 0.0
+
+    #     for n in self.position:
+    #         i = int(n)
+
+    #         f = f+ self.pso.env_wall_time.curr_time*(1+(1-1/\
+    #                                                 (self.pso.nodes[i].job_dag.num_nodes -self.pso.nodes[i].job_dag.num_nodes_done)))\
+    #         - self.pso.nodes[i].job_dag.start_time
+
+    #     self.fitness = -f #+ w
 
     def update_pbest(self):
         self.best.position = np.copy(self.position)
